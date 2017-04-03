@@ -9,6 +9,7 @@ import {
     TouchableHighlight,
     RefreshControl
 } from 'react-native';
+import PostIndexItem from './post_index_item';
 
 export default class PostIndex extends Component {
     constructor(props) {
@@ -47,29 +48,40 @@ export default class PostIndex extends Component {
 
     loading() {
         if (this.state.isRefreshing)
-             return (
+            return (
                 <Text>Refreshing...</Text>
             );
-        else return (
+        else
+            return (
                 <Text>Loading...</Text>
             );
+        }
+
+    handleNextPress(row) {
+      console.log(row);
+        let nextRoute = {
+            component: PostIndexItem,
+            title: row.data.title,
+            passProps: {
+                post: row
+            }
+        };
+        this.props.navigator.push(nextRoute);
     }
 
     render() {
-        if (this.state.isFetching) {
+        if (this.state.isFetching)
             return this.loading();
-        } else {
-
+        else
             return (
-                <ListView
-                  dataSource={this.state.dataSource}
-                  refreshControl={<RefreshControl
-                      refreshing = {this.state.isRefreshing}
-                      onRefresh = {
-                        this.onRefresh.bind(this)
-                      } />}
-                  renderSeparator={(sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={styles.separator}/>}
-                  renderRow={(rowData) => <TouchableHighlight underlayColor="lightskyblue" onPress={() => alert(rowData.data.title)}>
+                <ListView dataSource={this.state.dataSource} style={{
+                    paddingTop: 40
+                }} refreshControl={< RefreshControl refreshing = {
+                    this.state.isRefreshing
+                }
+                onRefresh = {
+                    this.onRefresh.bind(this)
+                } />} renderSeparator={(sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={styles.separator}/>} renderRow={(rowData) => <TouchableHighlight underlayColor="lightskyblue" onPress={() => this.handleNextPress(rowData)}>
                     <View style={styles.item}>
                         <Text style={styles.title}>
                             {rowData.data.title}
@@ -83,8 +95,6 @@ export default class PostIndex extends Component {
             );
         }
     }
-}
-
 const styles = StyleSheet.create({
     item: {
         flex: 1
