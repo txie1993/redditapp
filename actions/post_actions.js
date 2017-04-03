@@ -13,7 +13,7 @@ export const receiveAllPosts = posts => ({
 export const fetchPosts = () => {
   return dispatch => {
     dispatch(requestAllPosts());
-    return fetch("https://reddit.com/r/ssbm/.json")
+    return fetch("https://reddit.com/.json")
       .then(response => response.json())
       .then(json => dispatch(receiveAllPosts(json)))
       .catch(error => console.log(error));

@@ -25,8 +25,6 @@ export default class PostIndex extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.isFetching) {
-            // nextProps.posts.posts.data.children.forEach(child => console.log(child.data.title));
-            // console.log(nextProps.posts.posts.data.children);
             this.setState({
                 dataSource: this.state.dataSource.cloneWithRows(nextProps.posts.posts.data.children),
                 isFetching: false
@@ -34,22 +32,6 @@ export default class PostIndex extends Component {
         } else {
             this.setState({isFetching: true})
         }
-    }
-
-    renderFooter() {
-        let LoadingView;
-
-        if (Platform.OS === 'ios') {
-            LoadingView = ActivityIndicatorIOS;
-        } else {
-            LoadingView = ProgressBarAndroid;
-        }
-
-        return (
-            <View>
-                <LoadingView styleAttr='Small'/>
-            </View>
-        )
     }
 
     loading() {
@@ -63,14 +45,36 @@ export default class PostIndex extends Component {
             return this.loading();
         } else {
 
-            return (<ListView dataSource={this.state.dataSource} renderRow={(rowData) => <View>
-                <Text>
-                    {rowData.data.title}
-                </Text>
-                <Text>
-                    by {rowData.data.author}
-                </Text>
-            </View>}/>);
+            return (
+                <ListView dataSource={this.state.dataSource} renderSeparator={(sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={styles.separator}/>} renderRow={(rowData) => <View style={styles.item}>
+                    <Text style={styles.title}>
+                        {rowData.data.title}
+                    </Text>
+                    <Text style={styles.userAndSub}>
+                        by {rowData.data.author} in /r/{rowData.data.subreddit}
+                    </Text>
+                </View>}/>
+            );
         }
     }
 }
+
+var styles = StyleSheet.create({
+  item: {
+    flex: 1
+  },
+    title: {
+        fontWeight: 'bold',
+        fontSize: 15,
+        padding: 10,
+        paddingBottom: 0
+    },
+    userAndSub: {
+        padding: 10,
+        paddingTop: 5
+    },
+    separator: {
+        height: 1,
+        backgroundColor: '#CCCCCC'
+    }
+});
