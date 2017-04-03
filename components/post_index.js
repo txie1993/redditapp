@@ -5,7 +5,9 @@ import {
     Text,
     View,
     ListView,
-    ScrollView
+    ScrollView,
+    TouchableHighlight,
+    RefreshControl
 } from 'react-native';
 
 export default class PostIndex extends Component {
@@ -15,7 +17,8 @@ export default class PostIndex extends Component {
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => row1 !== row2
             }),
-            isFetching: true
+            isFetching: true,
+            isRefreshing: false
         }
     }
 
@@ -27,17 +30,29 @@ export default class PostIndex extends Component {
         if (!nextProps.isFetching) {
             this.setState({
                 dataSource: this.state.dataSource.cloneWithRows(nextProps.posts.posts.data.children),
-                isFetching: false
+                isFetching: false,
+                isRefreshing: false
             })
         } else {
             this.setState({isFetching: true})
         }
     }
 
+    onRefresh() {
+        this.setState({isRefreshing: true});
+        this.props.fetchPosts().then(() => {
+            this.setState({isRefreshing: false});
+        });
+    }
+
     loading() {
-        return (
-            <Text>Loading...</Text>
-        );
+        if (this.state.isRefreshing)
+             return (
+                <Text>Refreshing...</Text>
+            );
+        else return (
+                <Text>Loading...</Text>
+            );
     }
 
     render() {
@@ -46,23 +61,34 @@ export default class PostIndex extends Component {
         } else {
 
             return (
-                <ListView dataSource={this.state.dataSource} renderSeparator={(sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={styles.separator}/>} renderRow={(rowData) => <View style={styles.item}>
-                    <Text style={styles.title}>
-                        {rowData.data.title}
-                    </Text>
-                    <Text style={styles.userAndSub}>
-                        by {rowData.data.author} in /r/{rowData.data.subreddit}
-                    </Text>
-                </View>}/>
+                <ListView
+                  dataSource={this.state.dataSource}
+                  refreshControl={<RefreshControl
+                      refreshing = {this.state.isRefreshing}
+                      onRefresh = {
+                        this.onRefresh.bind(this)
+                      } />}
+                  renderSeparator={(sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={styles.separator}/>}
+                  renderRow={(rowData) => <TouchableHighlight underlayColor="lightskyblue" onPress={() => alert(rowData.data.title)}>
+                    <View style={styles.item}>
+                        <Text style={styles.title}>
+                            {rowData.data.title}
+                        </Text>
+                        <Text style={styles.userAndSub}>
+                            by {rowData.data.author}
+                            in /r/{rowData.data.subreddit}
+                        </Text>
+                    </View>
+                </TouchableHighlight>}/>
             );
         }
     }
 }
 
-var styles = StyleSheet.create({
-  item: {
-    flex: 1
-  },
+const styles = StyleSheet.create({
+    item: {
+        flex: 1
+    },
     title: {
         fontWeight: 'bold',
         fontSize: 15,
@@ -71,7 +97,7 @@ var styles = StyleSheet.create({
     },
     userAndSub: {
         padding: 10,
-        paddingTop: 5
+        paddingTop: 3
     },
     separator: {
         height: 1,

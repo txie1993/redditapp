@@ -5,7 +5,8 @@ import PostIndexContainer from './components/post_index_container'
 import {
   StyleSheet,
   View,
-  Dimensions
+  Dimensions,
+  Text
 } from 'react-native';
 
 const store = configureStore()
@@ -15,9 +16,10 @@ export default class Root extends Component {
       let dimensions = Dimensions.get('window');
         return (
             <View style={{
-                paddingTop: 65,
+                paddingTop: 25,
                 height: dimensions.height
             }}>
+            <Text>Reddit</Text>
                 <Provider store={store}>
                     <PostIndexContainer/>
                 </Provider>
