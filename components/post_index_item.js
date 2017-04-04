@@ -5,12 +5,18 @@ import {
     Text,
     View,
     Image,
-    Linking
+    Linking,
+    ScrollView,
+    TouchableHighlight
 } from 'react-native';
 
 export default class PostIndexItem extends Component {
     constructor(props) {
         super(props);
+    }
+
+    openUrl(){
+      Linking.openURL(this.props.post.data.url);
     }
 
     content() {
@@ -26,14 +32,18 @@ export default class PostIndexItem extends Component {
             }}/>);
         } else if (this.props.post.data.selftext_html){
           return(
-            <Text>this.props.post.data.selftext</Text>
+            <ScrollView>
+              <Text>{this.props.post.data.selftext}</Text>
+            </ScrollView>
           )
         }
     }
     render() {
         return (
             <View style={styles.body}>
-                <Text>{this.props.post.data.url}</Text>
+                <TouchableHighlight>
+                  <Text onPress={()=> this.openUrl()}>Source Link</Text>
+                </TouchableHighlight>
                 {this.content()}
             </View>
         );

@@ -49,16 +49,15 @@ export default class PostIndex extends Component {
     loading() {
         if (this.state.isRefreshing)
             return (
-                <Text>Refreshing...</Text>
+                <Text style={styles.loading}> Refreshing...</Text>
             );
         else
             return (
-                <Text>Loading...</Text>
+                <Text style={styles.loading}> Loading...</Text>
             );
         }
 
     handleNextPress(row) {
-      console.log(row);
         let nextRoute = {
             component: PostIndexItem,
             title: row.data.title,
@@ -112,5 +111,9 @@ const styles = StyleSheet.create({
     separator: {
         height: 1,
         backgroundColor: '#CCCCCC'
+    },
+    loading: {
+      textAlign: 'center',
+      margin: 100,
     }
 });
