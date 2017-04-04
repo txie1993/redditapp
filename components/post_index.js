@@ -7,7 +7,8 @@ import {
     ListView,
     ScrollView,
     TouchableHighlight,
-    RefreshControl
+    RefreshControl,
+    Linking
 } from 'react-native';
 import PostIndexItem from './post_index_item';
 
@@ -58,14 +59,18 @@ export default class PostIndex extends Component {
         }
 
     handleNextPress(row) {
+      if (row.data.selftext_html){
         let nextRoute = {
-            component: PostIndexItem,
-            title: row.data.title,
-            passProps: {
-                post: row
-            }
+          component: PostIndexItem,
+          title: row.data.title,
+          passProps: {
+            post: row
+          }
         };
         this.props.navigator.push(nextRoute);
+      } else {
+        Linking.openURL(row.data.url);
+      }
     }
 
     render() {
@@ -86,8 +91,7 @@ export default class PostIndex extends Component {
                             {rowData.data.title}
                         </Text>
                         <Text style={styles.userAndSub}>
-                            by {rowData.data.author}
-                            in /r/{rowData.data.subreddit}
+                            by {rowData.data.author} in /r/{rowData.data.subreddit}
                         </Text>
                     </View>
                 </TouchableHighlight>}/>
